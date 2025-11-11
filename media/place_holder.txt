@@ -1,1 +1,1 @@
-This is a placeholder file to create the media folder.
+This folder contains visual assets and media files used in the NOVA project, including logos, icons, product images, promotional material and wireframes of the website prototype.
