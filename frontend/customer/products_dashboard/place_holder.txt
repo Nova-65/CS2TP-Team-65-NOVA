@@ -1,0 +1,1 @@
+This folder will contain the products.php file which will provide the code for the products dashboard page of the NOVA website.
