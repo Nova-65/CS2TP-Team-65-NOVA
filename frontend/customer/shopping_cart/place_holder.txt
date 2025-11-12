@@ -1,0 +1,1 @@
+This folder will contain the cart.php file which will provide the code for the shopping cart page of the NOVA website.
