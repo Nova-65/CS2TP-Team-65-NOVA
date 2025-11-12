@@ -1,0 +1,1 @@
+This folder will contain the checkout.php file which will provide the code for the checkout page of the NOVA website.
