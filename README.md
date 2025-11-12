@@ -52,7 +52,7 @@ Project Management Links:
 
 - Trello Board: https://trello.com/b/7CddvAjM
     
-- GitHub Repository: https://github.com/Nova-65/CS2TP-Team-65-NOVA  
+- GitHub Repository: https://github.com/CS2TP-Team-65-NOVA/NOVA_E-Commerce_Platform 
 
 The project follows an Agile, sprint-based development process to support iterative improvements and collaborative work. Trello is used for tracking tasks, and GitHub is used for version control and documentation. This repository contains the documentation and artefacts created during Teaching Period 1, forming the foundation for further development in Teaching Period 2.
 
