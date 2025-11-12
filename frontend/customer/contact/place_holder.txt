@@ -1,0 +1,1 @@
+This folder will contain the contact.php file which will provide the code for the contact page of the NOVA website.
