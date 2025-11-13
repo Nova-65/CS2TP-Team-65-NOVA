@@ -1,3 +1,5 @@
+NOVA Project Overview: Ashish Mepani (Front-End Integration Engineer / Report Contributor)
+
 Role Summary
 As Front-End Integration Engineer, I focus on connecting the UI elements with the back-end logic and documenting how data should flow between them.
 
