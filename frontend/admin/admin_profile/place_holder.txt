@@ -1,0 +1,1 @@
+This folder will contain the admin_profile.php file which will provide the code for the admin profile page of the NOVA website.
