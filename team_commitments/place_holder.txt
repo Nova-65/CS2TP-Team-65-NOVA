@@ -1,0 +1,1 @@
+This folder will contain the team commitment files for each member, which will provide the proof of contribution for the NOVA project.
