@@ -1,14 +1,17 @@
+
 <?php
-$host     = "localhost";
-$username = "root";           // default XAMPP username
-$password = "";               // default XAMPP password
-$dbname   = "cs2team65_db";   // MUST match the DB you just imported
+$servername = "cs2410-web01pvm.aston.ac.uk"; 
+$username = "cs2team65";                     
+$password = "XRCsv6P4min3JM88F9xZ8LVGM";     
+$dbname = "cs2team65_db";                  
 
-$conn = mysqli_connect($host, $username, $password, $dbname);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
-
-mysqli_set_charset($conn, "utf8");
 ?>
+
+//$conn = mysqli_connect($host, $username, $password, $dbname);
+
+
