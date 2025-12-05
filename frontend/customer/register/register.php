@@ -1,33 +1,55 @@
 <?php
 session_start();
+require_once 'config.php';   // NEW: use your local NOVA DB connection ($conn)
 
 // Handle form submission
 if (isset($_POST['submitted'])) {
 
-    require_once('connect_deliciodb.php');
+    // Get and trim inputs
+    $username      = trim($_POST['username'] ?? '');
+    $email         = trim($_POST['email'] ?? '');
+    $passwordPlain = trim($_POST['password'] ?? '');
 
-    $username = isset($_POST['username']) ? trim($_POST['username']) : false;
-    $email    = isset($_POST['email']) ? trim($_POST['email']) : false;
-    $password = isset($_POST['password']) ? password_hash(trim($_POST['password']), PASSWORD_DEFAULT) : false;
-
-    if (!$username || !$email || !$password) {
+    if ($username === '' || $email === '' || $passwordPlain === '') {
         $error_message = "All fields are required!";
     } else {
-        try {
-            $check = $db->prepare("SELECT * FROM Users WHERE username = ? OR email = ?");
-            $check->execute([$username, $email]);
+        // Hash password
+        $passwordHashed = password_hash($passwordPlain, PASSWORD_DEFAULT);
 
-            if ($check->fetch()) {
+        // 1) Check if username OR email already exists
+        //    NOTE: table/column names must match your DB (adjust if needed)
+        $sqlCheck = "SELECT user_id FROM users WHERE username = ? OR email = ? LIMIT 1";
+
+        if ($check = $conn->prepare($sqlCheck)) {
+            $check->bind_param('ss', $username, $email);
+            $check->execute();
+            $check->store_result();
+
+            if ($check->num_rows > 0) {
                 $error_message = "Username or email is already taken.";
             } else {
-                $stmt = $db->prepare("INSERT INTO Users (username, email, password) VALUES (?, ?, ?)");
-                $stmt->execute([$username, $email, $password]);
+                // 2) Insert new user
+                $sqlInsert = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+                if ($stmt = $conn->prepare($sqlInsert)) {
+                    $stmt->bind_param('sss', $username, $email, $passwordHashed);
 
-                header("Location: login.php");
-                exit();
+                    if ($stmt->execute()) {
+                        // Success – send to login
+                        header("Location: login.php");
+                        exit();
+                    } else {
+                        $error_message = "A database error occurred while creating your account.";
+                    }
+
+                    $stmt->close();
+                } else {
+                    $error_message = "Could not prepare insert statement.";
+                }
             }
-        } catch (PDOException $ex) {
-            $error_message = "A database error occurred!";
+
+            $check->close();
+        } else {
+            $error_message = "Could not prepare check statement.";
         }
     }
 }
@@ -72,8 +94,8 @@ if (isset($_POST['submitted'])) {
             <a href="login.php" class="nav-link">Log in</a>
 
             <a href="shopping_cart.php" class="basket-link">
-                <img src="basket_icon.png" class="basket-icon basket-icon-default">
-                <img src="active_basket_icon.png" class="basket-icon basket-icon-active">
+                <img src="basket_icon.png" class="basket-icon basket-icon-default" alt="Basket icon">
+                <img src="active_basket_icon.png" class="basket-icon basket-icon-active" alt="Active basket icon">
             </a>
 
         <?php else: ?>
@@ -83,23 +105,24 @@ if (isset($_POST['submitted'])) {
                 <a href="admin_dashboard.php" class="nav-link">Admin Dashboard</a>
 
                 <a href="admin_profile.php" class="account-link">
-                    <img src="account_icon.png" class="account-icon account-icon-default">
-                    <img src="active_account_icon.png" class="account-icon account-icon-active">
+                    <img src="account_icon.png" class="account-icon account-icon-default" alt="Account icon">
+                    <img src="active_account_icon.png" class="account-icon account-icon-active" alt="Active account icon">
                 </a>
 
                 <a href="shopping_cart.php" class="basket-link">
-                    <img src="basket_icon.png" class="basket-icon basket-icon-default">
-                    <img src="active_basket_icon.png" class="basket-icon basket-icon-active">
+                    <img src="basket_icon.png" class="basket-icon basket-icon-default" alt="Basket icon">
+                    <img src="active_basket_icon.png" class="basket-icon basket-icon-active" alt="Active basket icon">
                 </a>
+
             <?php else: ?>
                 <a href="customer_profile.php" class="account-link">
-                    <img src="account_icon.png" class="account-icon account-icon-default">
-                    <img src="active_account_icon.png" class="account-icon account-icon-active">
+                    <img src="account_icon.png" class="account-icon account-icon-default" alt="Account icon">
+                    <img src="active_account_icon.png" class="account-icon account-icon-active" alt="Active account icon">
                 </a>
 
                 <a href="shopping_cart.php" class="basket-link">
-                    <img src="basket_icon.png" class="basket-icon basket-icon-default">
-                    <img src="active_basket_icon.png" class="basket-icon basket-icon-active">
+                    <img src="basket_icon.png" class="basket-icon basket-icon-default" alt="Basket icon">
+                    <img src="active_basket_icon.png" class="basket-icon basket-icon-active" alt="Active basket icon">
                 </a>
             <?php endif; ?>
         <?php endif; ?>
@@ -119,7 +142,7 @@ if (isset($_POST['submitted'])) {
         </div>
 
         <?php if (isset($error_message)): ?>
-        <p class="register-error"><?php echo $error_message; ?></p>
+        <p class="register-error"><?php echo htmlspecialchars($error_message); ?></p>
         <?php endif; ?>
 
         <label for="username">Username:</label>
@@ -147,3 +170,6 @@ if (isset($_POST['submitted'])) {
 
 </body>
 </html>
+
+
+
