@@ -1,6 +1,6 @@
 
 <?php
-$servername = "cs2410-web01pvm.aston.ac.uk"; 
+$servername = "localhost"; 
 $username = "cs2team65";                     
 $password = "XRCsv6P4min3JM88F9xZ8LVGM";     
 $dbname = "cs2team65_db";                  
@@ -13,5 +13,6 @@ if ($conn->connect_error) {
 ?>
 
 //$conn = mysqli_connect($host, $username, $password, $dbname);
+
 
 
