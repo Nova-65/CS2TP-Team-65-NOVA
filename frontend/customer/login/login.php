@@ -5,45 +5,53 @@ $errorMessage = '';
 
 if (isset($_POST['submitted'])) {
 
-if (!isset($_POST['email'], $_POST['password'])) {
-$errorMessage = 'Please fill in both fields.';
-} else {
+    // Basic validation
+    if (empty($_POST['email']) || empty($_POST['password'])) {
+        $errorMessage = 'Please fill in both fields.';
+    } else {
 
-require_once("connect_novadb.php");
+        // Use your new local DB connection (same as register.php)
+        require_once 'config.php'; // gives $conn (mysqli)
 
-try {
-$stat = $db->prepare('SELECT * FROM Users WHERE email = ?');
-$stat->execute([$_POST['email']]);
+        $email    = trim($_POST['email']);
+        $password = $_POST['password'];
 
-if ($stat->rowCount() > 0) {
-$row = $stat->fetch();
+        // Prepared statement to fetch user by email
+        $sql = "SELECT user_id, username, role, password FROM users WHERE email = ? LIMIT 1";
 
-if (password_verify($_POST['password'], $row['password'])) {
+        if ($stmt = $conn->prepare($sql)) {
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-$_SESSION['user_id'] = $row['user_id'];
-$_SESSION['username'] = $row['username'];
-$_SESSION['role'] = $row['role'];
+            if ($result && $result->num_rows === 1) {
+                $row = $result->fetch_assoc();
 
-header("Location: index.php");
-exit();
+                // Verify password hash
+                if (password_verify($password, $row['password'])) {
 
-} else {
-$errorMessage = 'Password is incorrect.';
-}
+                    $_SESSION['user_id']  = (int)$row['user_id'];
+                    $_SESSION['username'] = $row['username'];
+                    $_SESSION['role']     = $row['role'] ?: 'customer';
 
-} else {
-$errorMessage = 'Email not found.';
-}
+                    header("Location: index.php");
+                    exit();
 
-} catch (PDOException $ex) {
-$errorMessage = "A database error occurred.";
-}
+                } else {
+                    $errorMessage = 'Password is incorrect.';
+                }
+            } else {
+                $errorMessage = 'Email not found.';
+            }
 
-}
-
+            $stmt->close();
+        } else {
+            // If prepare() itself failed
+            $errorMessage = "A database error occurred.";
+        }
+    }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -167,4 +175,5 @@ Not registered yet?
 
 </body>
 </html>
+
 
