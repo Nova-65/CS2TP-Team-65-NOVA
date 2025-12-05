@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'config.php';
 ?>
 
 <!DOCTYPE html>
@@ -130,3 +131,4 @@ session_start();
 
 </body>
 </html>
+
