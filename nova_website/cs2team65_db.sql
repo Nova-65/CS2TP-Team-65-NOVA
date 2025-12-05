@@ -16,7 +16,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-CREATE DATABASE cs2team65_db;
+/*CREATE DATABASE cs2team65_db;*/
 USE cs2team65_db;
 
 -- --------------------------------------------------------
@@ -1365,6 +1365,23 @@ SET image_2 = CONCAT(SUBSTRING_INDEX(image, '.', 1), '_2.', SUBSTRING_INDEX(imag
     image_4 = CONCAT(SUBSTRING_INDEX(image, '.', 1), '_4.', SUBSTRING_INDEX(image, '.', -1)),
     image_5 = CONCAT(SUBSTRING_INDEX(image, '.', 1), '_5.', SUBSTRING_INDEX(image, '.', -1))
 WHERE image IS NOT NULL AND image <> '';
+
+-- 1) Make sure password column is big enough for hashes
+ALTER TABLE users
+  MODIFY password VARCHAR(255) NOT NULL;
+
+
+-- 2) Create (or reset) the admin user
+DELETE FROM users WHERE email = 'admin@nova.com';
+
+INSERT INTO users (full_name, email, password, phone_number, role)
+VALUES (
+    'Site Admin',
+    'admin@nova.com',
+    '$2b$12$aIKpppoORlMZIFAbh09CUe4S1VSpgB52.STGDlRzyo.G8q.FyW3tC',
+    '0000000000',
+    'admin'
+);
 
 COMMIT;
 
